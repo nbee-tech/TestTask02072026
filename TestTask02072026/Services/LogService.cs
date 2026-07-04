@@ -7,24 +7,17 @@ namespace Services
     public static class LogService
     {
         private static readonly Regex Format1 = new(
-            @"^(?<date>\d{2}\.\d{2}\.\d{4})
-                \s+(?<time>\d{2}:\d{2}:\d{2}\.\d+)
-                \s+(?<level>[A-Z]+)
-                \s+(?<message>.+)$"
-            );
+            @"^(?<date>\d{2}\.\d{2}\.\d{4})\s+(?<time>\d{2}:\d{2}:\d{2}\.\d+)\s+(?<level>[A-Z]+)\s+(?<message>.+)$");
 
         private static readonly Regex Format2 = new(
-            @"^(?<date>\d{4}-\d{2}-\d{2})
-                \s+(?<time>\d{2}:\d{2}:\d{2}\.\d+)\|
-                \s*(?<level>[A-Z]+)\|\d+\|(?<method>[^|]+)\|
-                \s*(?<message>.+)$");
+            @"^(?<date>\d{4}-\d{2}-\d{2})\s+(?<time>\d{2}:\d{2}:\d{2}\.\d+)\|\s*(?<level>[A-Z]+)\|\d+\|(?<method>[^|]+)\|\s*(?<message>.+)$");
 
+        //The method throws as input validation is not this class concern
         public static void ProcessFile(
             string inputPath,
             string outputPath,
             string problemsPath)
         {
-            //The method should not validate and must trust the source
             //Null check
             if (string.IsNullOrWhiteSpace(inputPath) ||
                 string.IsNullOrWhiteSpace(outputPath) ||
@@ -41,14 +34,18 @@ namespace Services
             {
                 throw new ArgumentException("Input file must have .txt extension.", nameof(inputPath));
             }
-            //Output directories check
-            if (!Directory.Exists(outputPath))
+
+            var outputDirectory = Path.GetDirectoryName(outputPath);
+            var problemsDirectory = Path.GetDirectoryName(problemsPath);
+
+            //Output/Problems directories check
+            if (!string.IsNullOrWhiteSpace(outputDirectory) && !Directory.Exists(outputDirectory))
             {
-                throw new DirectoryNotFoundException($"Output directory was not found.");
+                throw new DirectoryNotFoundException("Output directory was not found.");
             }
-            if (!Directory.Exists(problemsPath))
+            if (!string.IsNullOrWhiteSpace(problemsDirectory) && !Directory.Exists(problemsDirectory))
             {
-                throw new DirectoryNotFoundException($"Problems directory was not found.");
+                throw new DirectoryNotFoundException("Problems directory was not found.");
             }
 
             using var output = new StreamWriter(outputPath);
@@ -56,14 +53,16 @@ namespace Services
 
             foreach (string line in File.ReadLines(inputPath))
             {
+                //I've used a null-forgiving operator as if parsing succeeds
+                //you wont encounter a null entry in the block
                 if (TryParse(line, out LogEntry? entry))
                 {
                     output.WriteLine(
-                        $"{entry.Date}\t{entry.Time}\t{entry.Level}\t{entry.Method}\t{entry.Message}");
+                        $"{entry!.Date}\t{entry.Time}\t{entry.Level}\t{entry.Method}\t{entry.Message}");
                 }
                 else
                 {
-                    //Problems fallback
+                    //Problems fallback in case if parsing fails
                     problems.WriteLine(line);
                 }
             }
@@ -90,11 +89,11 @@ namespace Services
                 return false;
 
             if (!DateTime.TryParseExact(
-                    match.Groups["date"].Value,
-                    "dd.MM.yyyy",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out DateTime date))
+                match.Groups["date"].Value,
+                "dd.MM.yyyy",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateTime date))
             {
                 return false;
             }

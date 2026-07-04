@@ -57,22 +57,5 @@ namespace Services
                 _lock.ExitWriteLock();
             }
         }
-        //For testing (readers cannot call GetCount while there is a writer)
-        public static void AddToCountTest(int value)
-        {
-            _lock.EnterWriteLock();
-
-            try
-            {
-                //Pausing a thread to simulate long write operation
-                Thread.Sleep(1000); 
-                _count += value;
-            }
-            finally
-            {
-                _lock.ExitWriteLock();
-            }
-        }
-        
     }
 }

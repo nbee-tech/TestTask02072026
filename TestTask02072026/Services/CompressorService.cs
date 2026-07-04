@@ -5,15 +5,16 @@ namespace Services
 {
     public static class CompressorService
     {
-        //The class throws as input validation is not it's concern
+        //The method throws as input validation is not this class concern
         public static string Compress(string input)
         {
-            //null check
+            //Null check
             if(string.IsNullOrWhiteSpace(input))
                 throw new ArgumentException(
                     "Input cannot be null or empty.", 
                     nameof(input));
-            //latin and lowercase check of the first index
+            
+            //Latin and lowercase check of the first index
             if (input[0] < 'a' || input[0] > 'z')
                 throw new ArgumentException(
                     "Input must contain only lowercase Latin letters.", 
@@ -33,7 +34,7 @@ namespace Services
 
                 if (c < 'a' || c > 'z')
                 {
-                    //check each compare index
+                    //Check each compare index
                     throw new ArgumentException(
                         "Input must contain only lowercase Latin letters.", 
                         nameof(input));
@@ -66,8 +67,6 @@ namespace Services
             if (count > 1)
                 result.Append(count);
         }
-
-        //Also a decompression method
     }
 
 }

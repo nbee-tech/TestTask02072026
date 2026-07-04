@@ -15,7 +15,6 @@ namespace TestTask02072026
 
             var compressionOutput = CompressorService.Compress(arg1);
             Console.WriteLine(compressionOutput);
-            
         }
     }
 }
