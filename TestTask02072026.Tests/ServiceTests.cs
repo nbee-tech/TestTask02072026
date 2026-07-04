@@ -17,7 +17,7 @@ namespace TestTask02072026.Tests
         }
     }
 
-    public sealed class ServerServiceServiceTests
+    public sealed class ServerServiceTests
     {
         [Fact] //Check many parallel write operations
         public void AddToCount_WhenCalledInParallel_UpdatesCountCorrectly()
@@ -35,9 +35,9 @@ namespace TestTask02072026.Tests
         }
     }
 
-    public sealed class LogServiceTests
+    public sealed class LogServiceTests 
     {
-        [Fact]
+        [Fact] //Check the first format
         public void ProcessFile_ValidFormat1Line_WritesNormalizedLineToOutput()
         {
             // Arrange
@@ -65,7 +65,7 @@ namespace TestTask02072026.Tests
             Assert.Equal(string.Empty, problems);
         }
 
-        [Fact]
+        [Fact] //Check second format
         public void ProcessFile_ValidFormat2Line_WritesNormalizedLineToOutput()
         {
             // Arrange
@@ -93,7 +93,7 @@ namespace TestTask02072026.Tests
             Assert.Equal(string.Empty, problems);
         }
 
-        [Fact]
+        [Fact] //Check invalid line
         public void ProcessFile_InvalidLine_WritesLineToProblemsFile()
         {
             // Arrange
@@ -116,7 +116,7 @@ namespace TestTask02072026.Tests
             Assert.Equal("this is not a valid log line" + Environment.NewLine, problems);
         }
 
-        [Fact]
+        [Fact] //Check multiple lines
         public void ProcessFile_MultipleLines_SplitsValidAndInvalidLines()
         {
             // Arrange
